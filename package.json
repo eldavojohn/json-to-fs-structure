@@ -1,0 +1,27 @@
+{
+  "name": "json-to-fs-structure",
+  "version": "1.0.0",
+  "description": "A simple module that takes a simple JSON file and produces the properties as a file structure in the same directory or given directory.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "format": "yarn eslint . --fix"
+  },
+  "keywords": [
+    "filesystem",
+    "json",
+    "utility"
+  ],
+  "author": "eldavojohn",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^4.14.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-prettier": "^2.4.0",
+    "mocha": "^4.0.1",
+    "prettier": "^1.9.2"
+  },
+  "dependencies": {
+    "latest": "^0.2.0"
+  }
+}
