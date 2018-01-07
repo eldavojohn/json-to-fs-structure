@@ -1,7 +1,12 @@
 const assert = require("assert");
 const fs = require("fs");
 
-const { jsonToFsStructure } = require("../index");
+const {
+  jsonToFsStructure,
+  jsonToFsWithLeafFunction,
+  jsonToFsWithNonLeafFunction,
+  jsonToFsWithFunction
+} = require("../index");
 
 describe("json-to-fs-structure", () => {
   describe("jsonToFsStructure", () => {
@@ -143,6 +148,234 @@ describe("json-to-fs-structure", () => {
           done();
         }
       );
+    });
+  });
+  describe("jsonToFsWithLeafFunction", () => {
+    it("should produce a nested deep complex directory structure and execute the procedure on leaves", done => {
+      const endpoints = [];
+      jsonToFsWithLeafFunction(
+        {
+          testArrayField5: [
+            { somedir: {} },
+            { anotherdir: {} },
+            {
+              andanotherdir: {
+                interiorone: {
+                  interiortwo: {
+                    interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        (filePath, acc) => {
+          endpoints.push(filePath);
+        },
+        {},
+        ".",
+        () => {
+          assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
+          assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
+          assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
+          assert.equal(
+            fs.statSync("testArrayField5/andanotherdir/interiorone").size,
+            4096
+          );
+          assert.equal(
+            fs.statSync("testArrayField5/andanotherdir/interiorone/interiortwo")
+              .size,
+            4096
+          );
+          assert.equal(
+            fs.statSync(
+              "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree"
+            ).size,
+            4096
+          );
+          assert.equal(
+            fs.statSync(
+              "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfour"
+            ).size,
+            4096
+          );
+          assert.equal(
+            fs.statSync(
+              "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfive"
+            ).size,
+            4096
+          );
+          fs.rmdirSync("testArrayField5/somedir");
+          fs.rmdirSync("testArrayField5/anotherdir");
+          fs.rmdirSync(
+            "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfive"
+          );
+          fs.rmdirSync(
+            "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfour"
+          );
+          fs.rmdirSync(
+            "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree"
+          );
+          fs.rmdirSync("testArrayField5/andanotherdir/interiorone/interiortwo");
+          fs.rmdirSync("testArrayField5/andanotherdir/interiorone");
+          fs.rmdirSync("testArrayField5/andanotherdir");
+          fs.rmdirSync("testArrayField5");
+          done();
+        }
+      );
+      expect(endpoints).toMatchSnapshot();
+    });
+  });
+  describe("jsonToFsWithNonLeafFunction", () => {
+    it("should produce a nested deep complex directory structure and execute the procedure on non leaves", done => {
+      const endpoints = [];
+      jsonToFsWithNonLeafFunction(
+        {
+          testArrayField5: [
+            { somedir: {} },
+            { anotherdir: {} },
+            {
+              andanotherdir: {
+                interiorone: {
+                  interiortwo: {
+                    interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        (filePath, acc) => {
+          endpoints.push(filePath);
+        },
+        {},
+        ".",
+        () => {
+          assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
+          assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
+          assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
+          assert.equal(
+            fs.statSync("testArrayField5/andanotherdir/interiorone").size,
+            4096
+          );
+          assert.equal(
+            fs.statSync("testArrayField5/andanotherdir/interiorone/interiortwo")
+              .size,
+            4096
+          );
+          assert.equal(
+            fs.statSync(
+              "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree"
+            ).size,
+            4096
+          );
+          assert.equal(
+            fs.statSync(
+              "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfour"
+            ).size,
+            4096
+          );
+          assert.equal(
+            fs.statSync(
+              "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfive"
+            ).size,
+            4096
+          );
+          fs.rmdirSync("testArrayField5/somedir");
+          fs.rmdirSync("testArrayField5/anotherdir");
+          fs.rmdirSync(
+            "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfive"
+          );
+          fs.rmdirSync(
+            "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfour"
+          );
+          fs.rmdirSync(
+            "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree"
+          );
+          fs.rmdirSync("testArrayField5/andanotherdir/interiorone/interiortwo");
+          fs.rmdirSync("testArrayField5/andanotherdir/interiorone");
+          fs.rmdirSync("testArrayField5/andanotherdir");
+          fs.rmdirSync("testArrayField5");
+          done();
+        }
+      );
+      expect(endpoints).toMatchSnapshot();
+    });
+  });
+  describe("jsonToFsWithFunction", () => {
+    it("should produce a nested deep complex directory structure and execute the procedure on everything", done => {
+      const endpoints = [];
+      jsonToFsWithFunction(
+        {
+          testArrayField5: [
+            { somedir: {} },
+            { anotherdir: {} },
+            {
+              andanotherdir: {
+                interiorone: {
+                  interiortwo: {
+                    interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        (filePath, acc) => {
+          endpoints.push(filePath);
+        },
+        {},
+        ".",
+        () => {
+          assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
+          assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
+          assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
+          assert.equal(
+            fs.statSync("testArrayField5/andanotherdir/interiorone").size,
+            4096
+          );
+          assert.equal(
+            fs.statSync("testArrayField5/andanotherdir/interiorone/interiortwo")
+              .size,
+            4096
+          );
+          assert.equal(
+            fs.statSync(
+              "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree"
+            ).size,
+            4096
+          );
+          assert.equal(
+            fs.statSync(
+              "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfour"
+            ).size,
+            4096
+          );
+          assert.equal(
+            fs.statSync(
+              "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfive"
+            ).size,
+            4096
+          );
+          fs.rmdirSync("testArrayField5/somedir");
+          fs.rmdirSync("testArrayField5/anotherdir");
+          fs.rmdirSync(
+            "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfive"
+          );
+          fs.rmdirSync(
+            "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfour"
+          );
+          fs.rmdirSync(
+            "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree"
+          );
+          fs.rmdirSync("testArrayField5/andanotherdir/interiorone/interiortwo");
+          fs.rmdirSync("testArrayField5/andanotherdir/interiorone");
+          fs.rmdirSync("testArrayField5/andanotherdir");
+          fs.rmdirSync("testArrayField5");
+          done();
+        }
+      );
+      expect(endpoints).toMatchSnapshot();
     });
   });
 });

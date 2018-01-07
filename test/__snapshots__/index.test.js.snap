@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`json-to-fs-structure jsonToFsWithFunction should produce a nested deep complex directory structure and execute the procedure on everything 1`] = `
+Array [
+  "./testArrayField5",
+  "./testArrayField5/somedir",
+  "./testArrayField5/anotherdir",
+  "./testArrayField5/andanotherdir",
+  "./testArrayField5/andanotherdir/interiorone",
+  "./testArrayField5/andanotherdir/interiorone/interiortwo",
+  "./testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree",
+  "./testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfour",
+  "./testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfive",
+]
+`;
+
+exports[`json-to-fs-structure jsonToFsWithLeafFunction should produce a nested deep complex directory structure and execute the procedure on leaves 1`] = `
+Array [
+  "./testArrayField5/somedir",
+  "./testArrayField5/anotherdir",
+  "./testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfour",
+  "./testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfive",
+]
+`;
+
+exports[`json-to-fs-structure jsonToFsWithNonLeafFunction should produce a nested deep complex directory structure and execute the procedure on non leaves 1`] = `
+Array [
+  "./testArrayField5",
+  "./testArrayField5/andanotherdir",
+  "./testArrayField5/andanotherdir/interiorone",
+  "./testArrayField5/andanotherdir/interiorone/interiortwo",
+  "./testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree",
+]
+`;
