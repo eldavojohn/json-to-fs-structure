@@ -78,6 +78,9 @@ const procedure = (newPath, accumulator, obj) => {
   // something that takes the just created directory (relative newPath)
   // and the accumulator (a structure you can provide that continues through each call)
   // and the obj, the value of the nested structure if this is a leaf node it's {}
+
+  // lastly we return the accumulator to persist it
+  return accumulator;
 }
 ```
 The corresponding functions for the above executing procedures are: `jsonToFsWithLeafFunction`, `jsonToFsWithNonLeafFunction` and `jsonToFsWithFunction`.  So an example usage in a simple express server would look like this:
