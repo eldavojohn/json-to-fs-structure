@@ -82,7 +82,15 @@ describe("json-to-fs-structure", () => {
           testArrayField5: [
             { somedir: {} },
             { anotherdir: {} },
-            { andanotherdir: { interiorone: { interiortwo: { interiorthree: [{interiorfour: {}}, {interiorfive: {}}] }}} }
+            {
+              andanotherdir: {
+                interiorone: {
+                  interiortwo: {
+                    interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
+                  }
+                }
+              }
+            }
           ]
         },
         ".",
@@ -90,16 +98,44 @@ describe("json-to-fs-structure", () => {
           assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/andanotherdir/interiorone").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/andanotherdir/interiorone/interiortwo").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfour").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfive").size, 4096);
+          assert.equal(
+            fs.statSync("testArrayField5/andanotherdir/interiorone").size,
+            4096
+          );
+          assert.equal(
+            fs.statSync("testArrayField5/andanotherdir/interiorone/interiortwo")
+              .size,
+            4096
+          );
+          assert.equal(
+            fs.statSync(
+              "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree"
+            ).size,
+            4096
+          );
+          assert.equal(
+            fs.statSync(
+              "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfour"
+            ).size,
+            4096
+          );
+          assert.equal(
+            fs.statSync(
+              "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfive"
+            ).size,
+            4096
+          );
           fs.rmdirSync("testArrayField5/somedir");
           fs.rmdirSync("testArrayField5/anotherdir");
-          fs.rmdirSync("testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfive");
-          fs.rmdirSync("testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfour");
-          fs.rmdirSync("testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree");
+          fs.rmdirSync(
+            "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfive"
+          );
+          fs.rmdirSync(
+            "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfour"
+          );
+          fs.rmdirSync(
+            "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree"
+          );
           fs.rmdirSync("testArrayField5/andanotherdir/interiorone/interiortwo");
           fs.rmdirSync("testArrayField5/andanotherdir/interiorone");
           fs.rmdirSync("testArrayField5/andanotherdir");
