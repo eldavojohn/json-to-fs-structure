@@ -377,5 +377,39 @@ describe("json-to-fs-structure", () => {
       );
       expect(endpoints).toMatchSnapshot();
     });
+    it("should not go below the stop word andanotherdir provided", done => {
+      const endpoints = [];
+      jsonToFsWithFunction(
+        {
+          testArrayField5: [
+            { somedir: {} },
+            { anotherdir: {} },
+            {
+              andanotherdir: {
+                interiorone: {
+                  interiortwo: {
+                    interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        (filePath, acc) => {
+          endpoints.push(filePath);
+        },
+        {},
+        ".",
+        () => {
+          assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
+          assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
+          fs.rmdirSync("testArrayField5/somedir");
+          fs.rmdirSync("testArrayField5/anotherdir");
+          fs.rmdirSync("testArrayField5");
+          done();
+        }, 'andanotherdir'
+      );
+      expect(endpoints).toMatchSnapshot();
+    });
   });
 });
