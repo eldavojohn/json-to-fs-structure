@@ -63,6 +63,10 @@ const levelPropertiesToDirectories = (obj, filePath, stopWord, executorObject = 
           accumulator = procedure(newPath, accumulator, obj[`${property}`]);
         }
       }
+    } else {
+      if (leafProcedure) {
+        accumulator = leafProcedure(`${filePath}${sep}`, accumulator, obj[`${property}`]);
+      }
     }
   });
   return promiseArray;

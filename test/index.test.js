@@ -225,6 +225,42 @@ describe("json-to-fs-structure", () => {
       );
       expect(endpoints).toMatchSnapshot();
     });
+    it("should produce a nested directory not past a stop word with a leaf function", done => {
+      const endpoints = [];
+      jsonToFsWithLeafFunction(
+        {
+          testArrayField5: [
+            { somedir: {} },
+            { anotherdir: {} },
+            {
+              andanotherdir: {
+                interiorone: {
+                  interiortwo: {
+                    interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        (filePath, acc) => {
+          endpoints.push(filePath);
+        },
+        {},
+        ".",
+        () => {
+          assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
+          assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
+          assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
+          fs.rmdirSync("testArrayField5/somedir");
+          fs.rmdirSync("testArrayField5/anotherdir");
+          fs.rmdirSync("testArrayField5/andanotherdir");
+          fs.rmdirSync("testArrayField5");
+          done();
+        }, 'interiorone'
+      );
+      expect(endpoints).toMatchSnapshot();
+    });
   });
   describe("jsonToFsWithNonLeafFunction", () => {
     it("should produce a nested deep complex directory structure and execute the procedure on non leaves", done => {

@@ -31,6 +31,14 @@ Array [
 ]
 `;
 
+exports[`json-to-fs-structure jsonToFsWithLeafFunction should produce a nested directory not past a stop word with a leaf function 1`] = `
+Array [
+  "./testArrayField5/somedir",
+  "./testArrayField5/anotherdir",
+  "./testArrayField5/andanotherdir/",
+]
+`;
+
 exports[`json-to-fs-structure jsonToFsWithNonLeafFunction should produce a nested deep complex directory structure and execute the procedure on non leaves 1`] = `
 Array [
   "./testArrayField5",
