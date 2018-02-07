@@ -7,6 +7,9 @@ const isLeaf = testNode =>
   testNode.constructor === Object && Object.keys(testNode).length === 0;
 
 const levelPropertiesToDirectories = (obj, filePath, stopWord, executorObject = {}) => {
+  if(obj && (typeof obj === 'string' || obj instanceof String)) {
+    return;
+  }
   const {
     leafProcedure,
     nonLeafProcedure,
@@ -29,7 +32,7 @@ const levelPropertiesToDirectories = (obj, filePath, stopWord, executorObject = 
       );
     });
   } else if (obj) {
-    fields = Object.getOwnPropertyNames(obj);
+    fields = Object.keys(obj) || [];
   }
   fields.forEach(property => {
     if (property !== stopWord) {
@@ -37,15 +40,15 @@ const levelPropertiesToDirectories = (obj, filePath, stopWord, executorObject = 
       try {
         fs.mkdirSync(newPath);
       } catch (e) {}
-      if (obj[property] && Object.getOwnPropertyNames(obj[property]).length > 0) {
+      if (obj[`${property}`] && Object.keys(obj[`${property}`]).length > 0) {
         if (nonLeafProcedure) {
-          accumulator = nonLeafProcedure(newPath, accumulator, obj[property]);
+          accumulator = nonLeafProcedure(newPath, accumulator, obj[`${property}`]);
         }
         if (procedure) {
-          accumulator = procedure(newPath, accumulator, obj[property]);
+          accumulator = procedure(newPath, accumulator, obj[`${property}`]);
         }
         promiseArray = promiseArray.concat(
-          levelPropertiesToDirectories(obj[property], newPath, stopWord, {
+          levelPropertiesToDirectories(obj[`${property}`], newPath, stopWord, {
             leafProcedure,
             nonLeafProcedure,
             procedure,
@@ -53,11 +56,11 @@ const levelPropertiesToDirectories = (obj, filePath, stopWord, executorObject = 
           })
         );
       } else {
-        if (leafProcedure && isLeaf(obj[property])) {
-          accumulator = leafProcedure(newPath, accumulator, obj[property]);
+        if (leafProcedure && isLeaf(obj[`${property}`])) {
+          accumulator = leafProcedure(newPath, accumulator, obj[`${property}`]);
         }
-        if (procedure && isLeaf(obj[property])) {
-          accumulator = procedure(newPath, accumulator, obj[property]);
+        if (procedure && isLeaf(obj[`${property}`])) {
+          accumulator = procedure(newPath, accumulator, obj[`${property}`]);
         }
       }
     }
