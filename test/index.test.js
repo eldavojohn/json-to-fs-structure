@@ -11,27 +11,28 @@ const {
 describe("json-to-fs-structure", () => {
   describe("jsonToFsStructure", () => {
     it("should produce a simple directory with a first layer object", done => {
-      jsonToFsStructure(
-        {
+      const options = {
+        jsonObject: {
           testDirectoryField: {}
         },
-        ".",
-        () => {
+        filePath: ".",
+        callback: () => {
           assert.equal(fs.statSync("testDirectoryField").size, 4096);
           fs.rmdirSync("testDirectoryField");
           done();
         }
-      );
+      };
+      jsonToFsStructure(options);
     });
     it("should produce a simple directory with a first layer object with siblings", done => {
-      jsonToFsStructure(
-        {
+      const options = {
+        jsonObject: {
           testDirectoryField0: {},
           testDirectoryField1: {},
           testDirectoryField2: {}
         },
-        ".",
-        () => {
+        filePath: ".",
+        callback: () => {
           assert.equal(fs.statSync("testDirectoryField0").size, 4096);
           assert.equal(fs.statSync("testDirectoryField1").size, 4096);
           assert.equal(fs.statSync("testDirectoryField2").size, 4096);
@@ -40,15 +41,16 @@ describe("json-to-fs-structure", () => {
           fs.rmdirSync("testDirectoryField2");
           done();
         }
-      );
+      };
+      jsonToFsStructure(options);
     });
     it("should produce a nested directory structure", done => {
-      jsonToFsStructure(
-        {
+      const options = {
+        jsonObject: {
           testDirectoryField3: { innerTestField: {} }
         },
-        ".",
-        () => {
+        filePath: ".",
+        callback: () => {
           assert.equal(
             fs.statSync("testDirectoryField3/innerTestField").size,
             4096
@@ -57,19 +59,20 @@ describe("json-to-fs-structure", () => {
           fs.rmdirSync("testDirectoryField3");
           done();
         }
-      );
+      };
+      jsonToFsStructure(options);
     });
     it("should produce a nested directory structure when there is an array of strings", done => {
-      jsonToFsStructure(
-        {
+      const options = {
+        jsonObject: {
           testArrayField5: [
             { somedir: {} },
             { anotherdir: {} },
             { andanotherdir: {} }
           ]
         },
-        ".",
-        () => {
+        filePath: ".",
+        callback: () => {
           assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
@@ -79,11 +82,12 @@ describe("json-to-fs-structure", () => {
           fs.rmdirSync("testArrayField5");
           done();
         }
-      );
+      };
+      jsonToFsStructure(options);
     });
     it("should produce a nested deep complex directory structure", done => {
-      jsonToFsStructure(
-        {
+      const options = {
+        jsonObject: {
           testArrayField5: [
             { somedir: {} },
             { anotherdir: {} },
@@ -98,8 +102,8 @@ describe("json-to-fs-structure", () => {
             }
           ]
         },
-        ".",
-        () => {
+        filePath: ".",
+        callback: () => {
           assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
@@ -147,34 +151,34 @@ describe("json-to-fs-structure", () => {
           fs.rmdirSync("testArrayField5");
           done();
         }
-      );
+      };
+      jsonToFsStructure(options);
     });
   });
   describe("jsonToFsWithLeafFunction", () => {
     it("should produce a nested deep complex directory structure and execute the procedure on leaves", done => {
       const endpoints = [];
-      jsonToFsWithLeafFunction(
-        {
-          testArrayField5: [
-            { somedir: {} },
-            { anotherdir: {} },
-            {
-              andanotherdir: {
-                interiorone: {
-                  interiortwo: {
-                    interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
+      const options = {
+        jsonObject: {
+            testArrayField5: [
+              { somedir: {} },
+              { anotherdir: {} },
+              {
+                andanotherdir: {
+                  interiorone: {
+                    interiortwo: {
+                      interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
+                    }
                   }
                 }
               }
-            }
-          ]
-        },
-        (filePath, acc) => {
+            ]
+          },
+        filePath: ".",
+        leafProcedure: (filePath, acc) => {
           endpoints.push(filePath);
         },
-        {},
-        ".",
-        () => {
+        callback: () => {
           assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
@@ -222,13 +226,14 @@ describe("json-to-fs-structure", () => {
           fs.rmdirSync("testArrayField5");
           done();
         }
-      );
+      };
+      jsonToFsWithLeafFunction(options);
       expect(endpoints).toMatchSnapshot();
     });
     it("should produce a nested directory not past a stop word with a leaf function", done => {
       const endpoints = [];
-      jsonToFsWithLeafFunction(
-        {
+      const options = {
+        jsonObject: {
           testArrayField5: [
             { somedir: {} },
             { anotherdir: {} },
@@ -243,12 +248,11 @@ describe("json-to-fs-structure", () => {
             }
           ]
         },
-        (filePath, acc) => {
+        leafProcedure: (filePath, acc) => {
           endpoints.push(filePath);
         },
-        {},
-        ".",
-        () => {
+        filePath: ".",
+        callback: () => {
           assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
@@ -257,16 +261,18 @@ describe("json-to-fs-structure", () => {
           fs.rmdirSync("testArrayField5/andanotherdir");
           fs.rmdirSync("testArrayField5");
           done();
-        }, 'interiorone'
-      );
+        },
+        stopWord: 'interiorone'
+      };
+      jsonToFsWithLeafFunction(options);
       expect(endpoints).toMatchSnapshot();
     });
   });
   describe("jsonToFsWithNonLeafFunction", () => {
     it("should produce a nested deep complex directory structure and execute the procedure on non leaves", done => {
       const endpoints = [];
-      jsonToFsWithNonLeafFunction(
-        {
+      const options = {
+        jsonObject: {
           testArrayField5: [
             { somedir: {} },
             { anotherdir: {} },
@@ -281,12 +287,12 @@ describe("json-to-fs-structure", () => {
             }
           ]
         },
-        (filePath, acc) => {
+        nonLeafProcedure: (filePath, acc) => {
           endpoints.push(filePath);
         },
-        {},
-        ".",
-        () => {
+        filePath: ".",
+        context: {},
+        callback: () => {
           assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
@@ -334,15 +340,16 @@ describe("json-to-fs-structure", () => {
           fs.rmdirSync("testArrayField5");
           done();
         }
-      );
+      };
+      jsonToFsWithNonLeafFunction(options);
       expect(endpoints).toMatchSnapshot();
     });
   });
   describe("jsonToFsWithFunction", () => {
     it("should produce a nested deep complex directory structure and execute the procedure on everything", done => {
       const endpoints = [];
-      jsonToFsWithFunction(
-        {
+      const options = {
+        jsonObject: {
           testArrayField5: [
             { somedir: {} },
             { anotherdir: {} },
@@ -357,12 +364,12 @@ describe("json-to-fs-structure", () => {
             }
           ]
         },
-        (filePath, acc) => {
+        procedure: (filePath, acc) => {
           endpoints.push(filePath);
         },
-        {},
-        ".",
-        () => {
+        filePath: ".",
+        context: {},
+        callback: () => {
           assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
@@ -410,13 +417,14 @@ describe("json-to-fs-structure", () => {
           fs.rmdirSync("testArrayField5");
           done();
         }
-      );
+      };
+      jsonToFsWithFunction(options);
       expect(endpoints).toMatchSnapshot();
     });
     it("should not go below the stop word andanotherdir provided", done => {
       const endpoints = [];
-      jsonToFsWithFunction(
-        {
+      const options = {
+        jsonObject: {
           testArrayField5: [
             { somedir: {} },
             { anotherdir: {} },
@@ -431,20 +439,22 @@ describe("json-to-fs-structure", () => {
             }
           ]
         },
-        (filePath, acc) => {
+        procedure: (filePath, acc) => {
           endpoints.push(filePath);
         },
-        {},
-        ".",
-        () => {
+        filePath: ".",
+        context: {},
+        callback: () => {
           assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
           fs.rmdirSync("testArrayField5/somedir");
           fs.rmdirSync("testArrayField5/anotherdir");
           fs.rmdirSync("testArrayField5");
           done();
-        }, 'andanotherdir'
-      );
+        },
+        stopWord: 'andanotherdir'
+      };
+      jsonToFsWithFunction(options);
       expect(endpoints).toMatchSnapshot();
     });
   });

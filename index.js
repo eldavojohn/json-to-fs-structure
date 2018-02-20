@@ -6,8 +6,8 @@ const {
 const isLeaf = testNode =>
   testNode.constructor === Object && Object.keys(testNode).length === 0;
 
-const levelPropertiesToDirectories = (obj, filePath, stopWord, executorObject = {}) => {
-  if(obj && (typeof obj === 'string' || obj instanceof String)) {
+const levelPropertiesToDirectories = (obj, filePath, stopWord, spaceReplace, executorObject = {}) => {
+  if (obj && (typeof obj === 'string' || obj instanceof String)) {
     return;
   }
   const {
@@ -23,7 +23,7 @@ const levelPropertiesToDirectories = (obj, filePath, stopWord, executorObject = 
   if (obj && obj instanceof Array) {
     obj.forEach(arrayObject => {
       promiseArray = promiseArray.concat(
-        levelPropertiesToDirectories(arrayObject, filePath, stopWord, {
+        levelPropertiesToDirectories(arrayObject, filePath, stopWord, spaceReplace, {
           leafProcedure,
           nonLeafProcedure,
           procedure,
@@ -36,7 +36,7 @@ const levelPropertiesToDirectories = (obj, filePath, stopWord, executorObject = 
   }
   fields.forEach(property => {
     if (property !== stopWord) {
-      const newPath = `${filePath}${sep}${property}`;
+      const newPath = spaceReplace ? `${filePath}${sep}${property.replace(/ /g, spaceReplace)}` : `${filePath}${sep}${property}`;
       try {
         fs.mkdirSync(newPath);
       } catch (e) {}
@@ -48,7 +48,7 @@ const levelPropertiesToDirectories = (obj, filePath, stopWord, executorObject = 
           accumulator = procedure(newPath, accumulator, obj[`${property}`]);
         }
         promiseArray = promiseArray.concat(
-          levelPropertiesToDirectories(obj[`${property}`], newPath, stopWord, {
+          levelPropertiesToDirectories(obj[`${property}`], newPath, stopWord, spaceReplace, {
             leafProcedure,
             nonLeafProcedure,
             procedure,
@@ -72,61 +72,65 @@ const levelPropertiesToDirectories = (obj, filePath, stopWord, executorObject = 
   return promiseArray;
 };
 
-exports.jsonToFsStructure = function(
+exports.jsonToFsStructure = function({
   jsonObject,
   filePath = ".",
-  cb = () => {},
-  stopWord
-) {
-  return Promise.all(levelPropertiesToDirectories(jsonObject, filePath, stopWord)).then(
-    cb
+  callback = () => {},
+  stopWord,
+  spaceReplace
+}) {
+  return Promise.all(levelPropertiesToDirectories(jsonObject, filePath, stopWord, spaceReplace)).then(
+    callback
   );
 };
 
-exports.jsonToFsWithLeafFunction = function(
+exports.jsonToFsWithLeafFunction = function({
   jsonObject,
   leafProcedure = () => {},
   context = {},
   filePath = ".",
-  cb = () => {},
-  stopWord
-) {
+  callback = () => {},
+  stopWord,
+  spaceReplace
+}) {
   return Promise.all(
-    levelPropertiesToDirectories(jsonObject, filePath, stopWord, {
-      leafProcedure,
-      accumulator: context
-    })
-  ).then(cb);
+    levelPropertiesToDirectories(jsonObject, filePath, stopWord, spaceReplace, {
+        leafProcedure,
+        accumulator: context
+      })
+  ).then(callback);
 };
 
-exports.jsonToFsWithNonLeafFunction = function(
+exports.jsonToFsWithNonLeafFunction = function({
   jsonObject,
   nonLeafProcedure = () => {},
   context = {},
   filePath = ".",
-  cb = () => {},
-  stopWord
-) {
+  callback = () => {},
+  stopWord,
+  spaceReplace
+}) {
   return Promise.all(
-    levelPropertiesToDirectories(jsonObject, filePath, stopWord, {
-      nonLeafProcedure,
-      accumulator: context
-    })
-  ).then(cb);
+    levelPropertiesToDirectories(jsonObject, filePath, stopWord, spaceReplace, {
+        nonLeafProcedure,
+        accumulator: context
+      })
+  ).then(callback);
 };
 
-exports.jsonToFsWithFunction = function(
+exports.jsonToFsWithFunction = function({
   jsonObject,
   procedure = () => {},
   context = {},
   filePath = ".",
-  cb = () => {},
-  stopWord
-) {
+  callback = () => {},
+  stopWord,
+  spaceReplace
+}) {
   return Promise.all(
-    levelPropertiesToDirectories(jsonObject, filePath, stopWord, {
-      procedure,
-      accumulator: context
-    })
-  ).then(cb);
+    levelPropertiesToDirectories(jsonObject, filePath, stopWord, spaceReplace, {
+        procedure,
+        accumulator: context
+      })
+  ).then(callback);
 };
