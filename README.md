@@ -17,23 +17,25 @@ var { jsonToFsStructure } = require('json-to-fs-structure');
 var app = express();
 
 app.get('/', function(req, res){
-   jsonToFsStructure(
-     {
-       testArrayField5: [
-         { somedir: {} },
-         { anotherdir: {} },
-         {
-           andanotherdir: {
-             interiorone: {
-               interiortwo: {
-                 interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
-               }
-             }
-           }
-         }
-       ]
-     });
-   res.send("Hello world!");
+  const options = {
+    jsonObject: {
+      testArrayField5: [
+        { somedir: {} },
+        { anotherdir: {} },
+        {
+          andanotherdir: {
+            interiorone: {
+              interiortwo: {
+                interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
+              }
+            }
+          }
+        }
+      ]
+    }
+  };
+  jsonToFsStructure(options);
+  res.send("Hello world!");
 });
 
 app.listen(3000);
@@ -46,22 +48,26 @@ var { jsonToFsStructure } = require('json-to-fs-structure');
 var app = express();
 
 app.get('/', function(req, res){
-   jsonToFsStructure(
-     {
-       testArrayField5: [
-         { somedir: {} },
-         { anotherdir: {} },
-         {
-           andanotherdir: {
-             interiorone: {
-               interiortwo: {
-                 interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
-               }
-             }
-           }
-         }
-       ]
-     }, ".", () => res.send("Hello world!"));
+  const options = {
+    jsonObject: {
+      testArrayField5: [
+        { somedir: {} },
+        { anotherdir: {} },
+        {
+          andanotherdir: {
+            interiorone: {
+              interiortwo: {
+                interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
+              }
+            }
+          }
+        }
+      ]
+    },
+    filePath: ".",
+    callback: () => res.send("Hello world!"))
+  };
+  jsonToFsStructure(options);
 });
 
 app.listen(3000);
@@ -97,24 +103,28 @@ const procedure = (newPath, accumulator, obj) => {
 
 app.get('/', function(req, res){
   let passByValueContext = {"contextvalue": 1, paths: []};
-   jsonToFsWithLeafFunction(
-     {
-       testArrayField5: [
-         { somedir: {} },
-         { anotherdir: {} },
-         {
-           andanotherdir: {
-             interiorone: {
-               interiortwo: {
-                 interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
-               }
-             }
-           }
-         }
-       ]
-     }, procedure, passByValueContext);
-     console.log(passByValueContext);
-   res.send("Hello world!");
+  const options = {
+    jsonObject: {
+      testArrayField5: [
+        { somedir: {} },
+        { anotherdir: {} },
+        {
+          andanotherdir: {
+            interiorone: {
+              interiortwo: {
+                interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
+              }
+            }
+          }
+        }
+      ]
+    },
+    procedure,
+    context: passByValueContext
+  };
+  jsonToFsWithLeafFunction(options);
+  console.log(passByValueContext);
+  res.send("Hello world!");
 });
 
 app.listen(3000);
