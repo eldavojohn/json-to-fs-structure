@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`json-to-fs-structure jsonToFsWithFunction should not do anything with ignored words like meta 1`] = `
+Array [
+  "./testArrayField5",
+  "./testArrayField5/somedir",
+  "./testArrayField5/anotherdir",
+]
+`;
+
 exports[`json-to-fs-structure jsonToFsWithFunction should not go below the stop word andanotherdir provided 1`] = `
 Array [
   "./testArrayField5",

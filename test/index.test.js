@@ -457,5 +457,44 @@ describe("json-to-fs-structure", () => {
       jsonToFsWithFunction(options);
       expect(endpoints).toMatchSnapshot();
     });
+    it("should not do anything with ignored words like meta", done => {
+      const endpoints = [];
+      const options = {
+        jsonObject: {
+          testArrayField5: [
+            { somedir: {meta: {}, apple: {}} },
+            { anotherdir: {} },
+            {
+              meta: {somethingweird: {}},
+              andanotherdir: {
+                interiorone: {
+                  interiortwo: {
+                    apple: {dontdonothing: {}},
+                    interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        procedure: (filePath, acc) => {
+          endpoints.push(filePath);
+        },
+        filePath: ".",
+        context: {},
+        callback: () => {
+          assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
+          assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
+          fs.rmdirSync("testArrayField5/somedir");
+          fs.rmdirSync("testArrayField5/anotherdir");
+          fs.rmdirSync("testArrayField5");
+          done();
+        },
+        ignoredWords: ['meta', 'apple'],
+        stopWord: 'andanotherdir'
+      };
+      jsonToFsWithFunction(options);
+      expect(endpoints).toMatchSnapshot();
+    });
   });
 });

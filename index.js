@@ -6,7 +6,7 @@ const {
 const isLeaf = testNode =>
   testNode.constructor === Object && Object.keys(testNode).length === 0;
 
-const levelPropertiesToDirectories = (obj, filePath, stopWord, spaceReplace, executorObject = {}) => {
+const levelPropertiesToDirectories = (obj, filePath, stopWord, ignoredWords, spaceReplace, executorObject = {}) => {
   if (obj && (typeof obj === 'string' || obj instanceof String)) {
     return;
   }
@@ -23,7 +23,7 @@ const levelPropertiesToDirectories = (obj, filePath, stopWord, spaceReplace, exe
   if (obj && obj instanceof Array) {
     obj.forEach(arrayObject => {
       promiseArray = promiseArray.concat(
-        levelPropertiesToDirectories(arrayObject, filePath, stopWord, spaceReplace, {
+        levelPropertiesToDirectories(arrayObject, filePath, stopWord, ignoredWords, spaceReplace, {
           leafProcedure,
           nonLeafProcedure,
           procedure,
@@ -35,7 +35,7 @@ const levelPropertiesToDirectories = (obj, filePath, stopWord, spaceReplace, exe
     fields = Object.keys(obj) || [];
   }
   fields.forEach(property => {
-    if (property !== stopWord) {
+    if (property !== stopWord && ignoredWords.indexOf(property) === -1) {
       const newPath = spaceReplace ? `${filePath}${sep}${property.replace(/ /g, spaceReplace)}` : `${filePath}${sep}${property}`;
       try {
         fs.mkdirSync(newPath);
@@ -48,7 +48,7 @@ const levelPropertiesToDirectories = (obj, filePath, stopWord, spaceReplace, exe
           accumulator = procedure(newPath, accumulator, obj[`${property}`]);
         }
         promiseArray = promiseArray.concat(
-          levelPropertiesToDirectories(obj[`${property}`], newPath, stopWord, spaceReplace, {
+          levelPropertiesToDirectories(obj[`${property}`], newPath, stopWord, ignoredWords, spaceReplace, {
             leafProcedure,
             nonLeafProcedure,
             procedure,
@@ -63,7 +63,7 @@ const levelPropertiesToDirectories = (obj, filePath, stopWord, spaceReplace, exe
           accumulator = procedure(newPath, accumulator, obj[`${property}`]);
         }
       }
-    } else {
+    } else if(ignoredWords.indexOf(property) === -1) {
       if (leafProcedure) {
         accumulator = leafProcedure(`${filePath}${sep}`, accumulator, obj[`${property}`]);
       }
@@ -77,9 +77,10 @@ exports.jsonToFsStructure = function({
   filePath = ".",
   callback = () => {},
   stopWord,
-  spaceReplace
+  spaceReplace,
+  ignoredWords = []
 }) {
-  return Promise.all(levelPropertiesToDirectories(jsonObject, filePath, stopWord, spaceReplace)).then(
+  return Promise.all(levelPropertiesToDirectories(jsonObject, filePath, stopWord, ignoredWords, spaceReplace)).then(
     callback
   );
 };
@@ -91,10 +92,11 @@ exports.jsonToFsWithLeafFunction = function({
   filePath = ".",
   callback = () => {},
   stopWord,
-  spaceReplace
+  spaceReplace,
+  ignoredWords = []
 }) {
   return Promise.all(
-    levelPropertiesToDirectories(jsonObject, filePath, stopWord, spaceReplace, {
+    levelPropertiesToDirectories(jsonObject, filePath, stopWord, ignoredWords, spaceReplace, {
         leafProcedure,
         accumulator: context
       })
@@ -108,10 +110,11 @@ exports.jsonToFsWithNonLeafFunction = function({
   filePath = ".",
   callback = () => {},
   stopWord,
-  spaceReplace
+  spaceReplace,
+  ignoredWords = []
 }) {
   return Promise.all(
-    levelPropertiesToDirectories(jsonObject, filePath, stopWord, spaceReplace, {
+    levelPropertiesToDirectories(jsonObject, filePath, stopWord, ignoredWords, spaceReplace, {
         nonLeafProcedure,
         accumulator: context
       })
@@ -125,10 +128,11 @@ exports.jsonToFsWithFunction = function({
   filePath = ".",
   callback = () => {},
   stopWord,
-  spaceReplace
+  spaceReplace,
+  ignoredWords = []
 }) {
   return Promise.all(
-    levelPropertiesToDirectories(jsonObject, filePath, stopWord, spaceReplace, {
+    levelPropertiesToDirectories(jsonObject, filePath, stopWord, ignoredWords, spaceReplace, {
         procedure,
         accumulator: context
       })

@@ -1,6 +1,6 @@
 {
   "name": "json-to-fs-structure",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A simple module that takes a simple JSON file and produces the properties as a file structure in the same directory or given directory.",
   "main": "index.js",
   "scripts": {
