@@ -42,10 +42,10 @@ const levelPropertiesToDirectories = (obj, filePath, stopWord, ignoredWords, spa
       } catch (e) {}
       if (obj[`${property}`] && Object.keys(obj[`${property}`]).length > 0) {
         if (nonLeafProcedure) {
-          accumulator = nonLeafProcedure(newPath, accumulator, obj[`${property}`], property);
+          nonLeafProcedure(newPath, accumulator, obj[`${property}`], property);
         }
         if (procedure) {
-          accumulator = procedure(newPath, accumulator, obj[`${property}`], property);
+          procedure(newPath, accumulator, obj[`${property}`], property);
         }
         promiseArray = promiseArray.concat(
           levelPropertiesToDirectories(obj[`${property}`], newPath, stopWord, ignoredWords, spaceReplace, {
@@ -57,15 +57,15 @@ const levelPropertiesToDirectories = (obj, filePath, stopWord, ignoredWords, spa
         );
       } else {
         if (leafProcedure && isLeaf(obj[`${property}`])) {
-          accumulator = leafProcedure(newPath, accumulator, obj[`${property}`], property);
+          leafProcedure(newPath, accumulator, obj[`${property}`], property);
         }
         if (procedure && isLeaf(obj[`${property}`])) {
-          accumulator = procedure(newPath, accumulator, obj[`${property}`], property);
+          procedure(newPath, accumulator, obj[`${property}`], property);
         }
       }
     } else if(ignoredWords.indexOf(property) === -1) {
       if (leafProcedure) {
-        accumulator = leafProcedure(`${filePath}${sep}`, accumulator, obj[`${property}`], property);
+        leafProcedure(`${filePath}${sep}`, accumulator, obj[`${property}`], property);
       }
     }
   });
