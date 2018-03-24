@@ -37,35 +37,36 @@ const levelPropertiesToDirectories = (obj, filePath, stopWord, ignoredWords, spa
   fields.forEach(property => {
     if (property !== stopWord && ignoredWords.indexOf(property) === -1) {
       const newPath = spaceReplace ? `${filePath}${sep}${property.replace(/ /g, spaceReplace)}` : `${filePath}${sep}${property}`;
+      let accumulatorCopy = Object.assign({}, accumulator)
       try {
         fs.mkdirSync(newPath);
       } catch (e) {}
       if (obj[`${property}`] && Object.keys(obj[`${property}`]).length > 0) {
         if (nonLeafProcedure) {
-          nonLeafProcedure(newPath, accumulator, obj[`${property}`], property);
+          accumulatorCopy = nonLeafProcedure(newPath, accumulator, obj[`${property}`], property);
         }
         if (procedure) {
-          procedure(newPath, accumulator, obj[`${property}`], property);
+          accumulatorCopy = procedure(newPath, accumulator, obj[`${property}`], property);
         }
         promiseArray = promiseArray.concat(
           levelPropertiesToDirectories(obj[`${property}`], newPath, stopWord, ignoredWords, spaceReplace, {
             leafProcedure,
             nonLeafProcedure,
             procedure,
-            accumulator
+            accumulator: accumulatorCopy
           })
         );
       } else {
         if (leafProcedure && isLeaf(obj[`${property}`])) {
-          leafProcedure(newPath, accumulator, obj[`${property}`], property);
+          leafProcedure(newPath, Object.assign({}, accumulator), obj[`${property}`], property);
         }
         if (procedure && isLeaf(obj[`${property}`])) {
-          procedure(newPath, accumulator, obj[`${property}`], property);
+          procedure(newPath, Object.assign({}, accumulator), obj[`${property}`], property);
         }
       }
     } else if(ignoredWords.indexOf(property) === -1) {
       if (leafProcedure) {
-        leafProcedure(`${filePath}${sep}`, accumulator, obj[`${property}`], property);
+        leafProcedure(`${filePath}${sep}`, Object.assign({}, accumulator), obj[`${property}`], property);
       }
     }
   });
