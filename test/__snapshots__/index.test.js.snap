@@ -5,6 +5,9 @@ Array [
   "./testArrayField5",
   "./testArrayField5/somedir",
   "./testArrayField5/anotherdir",
+  "./testArrayField5/andanotherdir",
+  "./testArrayField5/andanotherdir/interiorone",
+  "./testArrayField5/andanotherdir/interiorone/interiortwo",
 ]
 `;
 

@@ -485,13 +485,19 @@ describe("json-to-fs-structure", () => {
         callback: () => {
           assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
+          assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
+          assert.equal(fs.statSync("testArrayField5/andanotherdir/interiorone").size, 4096);
+          assert.equal(fs.statSync("testArrayField5/andanotherdir/interiorone/interiortwo").size, 4096);
           fs.rmdirSync("testArrayField5/somedir");
           fs.rmdirSync("testArrayField5/anotherdir");
+          fs.rmdirSync("testArrayField5/andanotherdir/interiorone/interiortwo");
+          fs.rmdirSync("testArrayField5/andanotherdir/interiorone");
+          fs.rmdirSync("testArrayField5/andanotherdir");
           fs.rmdirSync("testArrayField5");
           done();
         },
         ignoredWords: ['meta', 'apple'],
-        stopWord: 'andanotherdir'
+        stopWord: 'interiorthree'
       };
       jsonToFsWithFunction(options);
       expect(endpoints).toMatchSnapshot();
