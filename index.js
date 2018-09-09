@@ -6,6 +6,11 @@ const {
 const isLeaf = testNode =>
   testNode.constructor === Object && Object.keys(testNode).length === 0;
 
+const isEqualOrIsInArray = (property, stopWord) =>
+  stopWord &&
+  (property === stopWord ||
+    (Array.isArray(stopWord) && stopWord.indexOf(property) > -1));
+
 const levelPropertiesToDirectories = (obj, filePath, stopWord, ignoredWords, spaceReplace, executorObject = {}) => {
   if (obj && (typeof obj === 'string' || obj instanceof String)) {
     return;
@@ -35,7 +40,7 @@ const levelPropertiesToDirectories = (obj, filePath, stopWord, ignoredWords, spa
     fields = Object.keys(obj) || [];
   }
   fields.forEach(property => {
-    if (property !== stopWord && ignoredWords.indexOf(property) === -1) {
+    if (!isEqualOrIsInArray(property, stopWord) && ignoredWords.indexOf(property) === -1) {
       const newPath = spaceReplace ? `${filePath}${sep}${property.replace(/ /g, spaceReplace)}` : `${filePath}${sep}${property}`;
       let accumulatorCopy = Object.assign({}, accumulator)
       try {
