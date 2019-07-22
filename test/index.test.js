@@ -160,20 +160,20 @@ describe("json-to-fs-structure", () => {
       const endpoints = [];
       const options = {
         jsonObject: {
-            testArrayField5: [
-              { somedir: {} },
-              { anotherdir: {} },
-              {
-                andanotherdir: {
-                  interiorone: {
-                    interiortwo: {
-                      interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
-                    }
+          testArrayField5: [
+            { somedir: {} },
+            { anotherdir: {} },
+            {
+              andanotherdir: {
+                interiorone: {
+                  interiortwo: {
+                    interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
                   }
                 }
               }
-            ]
-          },
+            }
+          ]
+        },
         filePath: ".",
         leafProcedure: (filePath, acc) => {
           endpoints.push(filePath);
@@ -262,7 +262,7 @@ describe("json-to-fs-structure", () => {
           fs.rmdirSync("testArrayField5");
           done();
         },
-        stopWord: 'interiorone'
+        stopWord: "interiorone"
       };
       jsonToFsWithLeafFunction(options);
       expect(endpoints).toMatchSnapshot();
@@ -452,7 +452,7 @@ describe("json-to-fs-structure", () => {
           fs.rmdirSync("testArrayField5");
           done();
         },
-        stopWord: 'andanotherdir'
+        stopWord: "andanotherdir"
       };
       jsonToFsWithFunction(options);
       expect(endpoints).toMatchSnapshot();
@@ -462,14 +462,14 @@ describe("json-to-fs-structure", () => {
       const options = {
         jsonObject: {
           testArrayField5: [
-            { somedir: {meta: {}, apple: {}} },
+            { somedir: { meta: {}, apple: {} } },
             { anotherdir: {} },
             {
-              meta: {somethingweird: {}},
+              meta: { somethingweird: {} },
               andanotherdir: {
                 interiorone: {
                   interiortwo: {
-                    apple: {dontdonothing: {}},
+                    apple: { dontdonothing: {} },
                     interiorthree: [{ interiorfour: {} }, { interiorfive: {} }]
                   }
                 }
@@ -486,8 +486,15 @@ describe("json-to-fs-structure", () => {
           assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
           assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/andanotherdir/interiorone").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/andanotherdir/interiorone/interiortwo").size, 4096);
+          assert.equal(
+            fs.statSync("testArrayField5/andanotherdir/interiorone").size,
+            4096
+          );
+          assert.equal(
+            fs.statSync("testArrayField5/andanotherdir/interiorone/interiortwo")
+              .size,
+            4096
+          );
           fs.rmdirSync("testArrayField5/somedir");
           fs.rmdirSync("testArrayField5/anotherdir");
           fs.rmdirSync("testArrayField5/andanotherdir/interiorone/interiortwo");
@@ -496,8 +503,8 @@ describe("json-to-fs-structure", () => {
           fs.rmdirSync("testArrayField5");
           done();
         },
-        ignoredWords: ['meta', 'apple'],
-        stopWord: 'interiorthree'
+        ignoredWords: ["meta", "apple"],
+        stopWord: "interiorthree"
       };
       jsonToFsWithFunction(options);
       expect(endpoints).toMatchSnapshot();
