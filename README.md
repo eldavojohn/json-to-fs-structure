@@ -3,13 +3,14 @@ Clean and simple JavaScript project for turning JSON objects into directory stru
 
 # Development
 For development, clone into this repository and to install run:
-`yarn install`
+`npm install`
 To test run:
-`yarn test`
+`npm test`
 
 # Usage
 To use this node module, install it like so:
 `yarn add json-to-fs-structure`
+`npm install json-to-fs-structure`
 And (as it's currently intended to be used on the server) usage looks like this on a simple node server:
 ```javascript
 var express = require('express');
