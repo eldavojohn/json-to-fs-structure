@@ -1,7 +1,7 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`json-to-fs-structure jsonToFsWithFunction should not do anything with ignored words like meta 1`] = `
-Array [
+[
   "./testArrayField5",
   "./testArrayField5/somedir",
   "./testArrayField5/anotherdir",
@@ -12,7 +12,7 @@ Array [
 `;
 
 exports[`json-to-fs-structure jsonToFsWithFunction should not go below the stop word andanotherdir provided 1`] = `
-Array [
+[
   "./testArrayField5",
   "./testArrayField5/somedir",
   "./testArrayField5/anotherdir",
@@ -20,7 +20,7 @@ Array [
 `;
 
 exports[`json-to-fs-structure jsonToFsWithFunction should produce a nested deep complex directory structure and execute the procedure on everything 1`] = `
-Array [
+[
   "./testArrayField5",
   "./testArrayField5/somedir",
   "./testArrayField5/anotherdir",
@@ -34,7 +34,7 @@ Array [
 `;
 
 exports[`json-to-fs-structure jsonToFsWithLeafFunction should produce a nested deep complex directory structure and execute the procedure on leaves 1`] = `
-Array [
+[
   "./testArrayField5/somedir",
   "./testArrayField5/anotherdir",
   "./testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfour",
@@ -43,7 +43,7 @@ Array [
 `;
 
 exports[`json-to-fs-structure jsonToFsWithLeafFunction should produce a nested directory not past a stop word with a leaf function 1`] = `
-Array [
+[
   "./testArrayField5/somedir",
   "./testArrayField5/anotherdir",
   "./testArrayField5/andanotherdir/",
@@ -51,7 +51,7 @@ Array [
 `;
 
 exports[`json-to-fs-structure jsonToFsWithNonLeafFunction should produce a nested deep complex directory structure and execute the procedure on non leaves 1`] = `
-Array [
+[
   "./testArrayField5",
   "./testArrayField5/andanotherdir",
   "./testArrayField5/andanotherdir/interiorone",

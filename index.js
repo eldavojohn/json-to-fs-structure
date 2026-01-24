@@ -1,7 +1,7 @@
 const fs = require("fs");
 const { sep } = require("path");
 
-const isLeaf = testNode =>
+const isLeaf = (testNode) =>
   testNode.constructor === Object && Object.keys(testNode).length === 0;
 
 const isEqualOrIsInArray = (property, stopWord) =>
@@ -15,7 +15,7 @@ const levelPropertiesToDirectories = (
   stopWord,
   ignoredWords,
   spaceReplace,
-  executorObject = {}
+  executorObject = {},
 ) => {
   if (obj && (typeof obj === "string" || obj instanceof String)) {
     return;
@@ -25,7 +25,7 @@ const levelPropertiesToDirectories = (
   let promiseArray = [];
   let fields = [];
   if (obj && obj instanceof Array) {
-    obj.forEach(arrayObject => {
+    obj.forEach((arrayObject) => {
       promiseArray = promiseArray.concat(
         levelPropertiesToDirectories(
           arrayObject,
@@ -37,15 +37,15 @@ const levelPropertiesToDirectories = (
             leafProcedure,
             nonLeafProcedure,
             procedure,
-            accumulator
-          }
-        )
+            accumulator,
+          },
+        ),
       );
     });
   } else if (obj) {
     fields = Object.keys(obj) || [];
   }
-  fields.forEach(property => {
+  fields.forEach((property) => {
     if (
       !isEqualOrIsInArray(property, stopWord) &&
       ignoredWords.indexOf(property) === -1
@@ -63,7 +63,7 @@ const levelPropertiesToDirectories = (
             newPath,
             accumulator,
             obj[`${property}`],
-            property
+            property,
           );
         }
         if (procedure) {
@@ -71,7 +71,7 @@ const levelPropertiesToDirectories = (
             newPath,
             accumulator,
             obj[`${property}`],
-            property
+            property,
           );
         }
         promiseArray = promiseArray.concat(
@@ -85,9 +85,9 @@ const levelPropertiesToDirectories = (
               leafProcedure,
               nonLeafProcedure,
               procedure,
-              accumulator: accumulatorCopy
-            }
-          )
+              accumulator: accumulatorCopy,
+            },
+          ),
         );
       } else {
         if (leafProcedure && isLeaf(obj[`${property}`])) {
@@ -95,7 +95,7 @@ const levelPropertiesToDirectories = (
             newPath,
             Object.assign({}, accumulator),
             obj[`${property}`],
-            property
+            property,
           );
         }
         if (procedure && isLeaf(obj[`${property}`])) {
@@ -103,7 +103,7 @@ const levelPropertiesToDirectories = (
             newPath,
             Object.assign({}, accumulator),
             obj[`${property}`],
-            property
+            property,
           );
         }
       }
@@ -113,7 +113,7 @@ const levelPropertiesToDirectories = (
           `${filePath}${sep}`,
           Object.assign({}, accumulator),
           obj[`${property}`],
-          property
+          property,
         );
       }
     }
@@ -121,13 +121,13 @@ const levelPropertiesToDirectories = (
   return promiseArray;
 };
 
-exports.jsonToFsStructure = function({
+exports.jsonToFsStructure = function ({
   jsonObject,
   filePath = ".",
   callback = () => {},
   stopWord,
   spaceReplace,
-  ignoredWords = []
+  ignoredWords = [],
 }) {
   return Promise.all(
     levelPropertiesToDirectories(
@@ -135,12 +135,12 @@ exports.jsonToFsStructure = function({
       filePath,
       stopWord,
       ignoredWords,
-      spaceReplace
-    )
+      spaceReplace,
+    ),
   ).then(callback);
 };
 
-exports.jsonToFsWithLeafFunction = function({
+exports.jsonToFsWithLeafFunction = function ({
   jsonObject,
   leafProcedure = () => {},
   context = {},
@@ -148,7 +148,7 @@ exports.jsonToFsWithLeafFunction = function({
   callback = () => {},
   stopWord,
   spaceReplace,
-  ignoredWords = []
+  ignoredWords = [],
 }) {
   return Promise.all(
     levelPropertiesToDirectories(
@@ -159,13 +159,13 @@ exports.jsonToFsWithLeafFunction = function({
       spaceReplace,
       {
         leafProcedure,
-        accumulator: context
-      }
-    )
+        accumulator: context,
+      },
+    ),
   ).then(callback);
 };
 
-exports.jsonToFsWithNonLeafFunction = function({
+exports.jsonToFsWithNonLeafFunction = function ({
   jsonObject,
   nonLeafProcedure = () => {},
   context = {},
@@ -173,7 +173,7 @@ exports.jsonToFsWithNonLeafFunction = function({
   callback = () => {},
   stopWord,
   spaceReplace,
-  ignoredWords = []
+  ignoredWords = [],
 }) {
   return Promise.all(
     levelPropertiesToDirectories(
@@ -184,13 +184,13 @@ exports.jsonToFsWithNonLeafFunction = function({
       spaceReplace,
       {
         nonLeafProcedure,
-        accumulator: context
-      }
-    )
+        accumulator: context,
+      },
+    ),
   ).then(callback);
 };
 
-exports.jsonToFsWithFunction = function({
+exports.jsonToFsWithFunction = function ({
   jsonObject,
   procedure = () => {},
   context = {},
@@ -198,7 +198,7 @@ exports.jsonToFsWithFunction = function({
   callback = () => {},
   stopWord,
   spaceReplace,
-  ignoredWords = []
+  ignoredWords = [],
 }) {
   return Promise.all(
     levelPropertiesToDirectories(
@@ -209,8 +209,8 @@ exports.jsonToFsWithFunction = function({
       spaceReplace,
       {
         procedure,
-        accumulator: context
-      }
-    )
+        accumulator: context,
+      },
+    ),
   ).then(callback);
 };
