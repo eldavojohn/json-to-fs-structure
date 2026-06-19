@@ -1,31 +1,35 @@
-const assert = require("assert");
-const fs = require("fs");
-
-const {
+import * as assert from "assert";
+import * as fs from "fs";
+import {
   jsonToFsStructure,
   jsonToFsWithLeafFunction,
   jsonToFsWithNonLeafFunction,
   jsonToFsWithFunction,
-} = require("../index");
+  JsonToFsStructureOptions,
+  JsonToFsWithLeafFunctionOptions,
+  JsonToFsWithNonLeafFunctionOptions,
+  JsonToFsWithFunctionOptions,
+} from "../index";
 
 describe("json-to-fs-structure", () => {
   describe("jsonToFsStructure", () => {
     it("should produce a simple directory with a first layer object", (done) => {
-      const options = {
+      const options: JsonToFsStructureOptions = {
         jsonObject: {
           testDirectoryField: {},
         },
         filePath: ".",
         callback: () => {
-          assert.equal(fs.statSync("testDirectoryField").size, 4096);
+          assert.strictEqual(fs.statSync("testDirectoryField").size, 4096);
           fs.rmdirSync("testDirectoryField");
           done();
         },
       };
       jsonToFsStructure(options);
     });
+
     it("should produce a simple directory with a first layer object with siblings", (done) => {
-      const options = {
+      const options: JsonToFsStructureOptions = {
         jsonObject: {
           testDirectoryField0: {},
           testDirectoryField1: {},
@@ -33,9 +37,9 @@ describe("json-to-fs-structure", () => {
         },
         filePath: ".",
         callback: () => {
-          assert.equal(fs.statSync("testDirectoryField0").size, 4096);
-          assert.equal(fs.statSync("testDirectoryField1").size, 4096);
-          assert.equal(fs.statSync("testDirectoryField2").size, 4096);
+          assert.strictEqual(fs.statSync("testDirectoryField0").size, 4096);
+          assert.strictEqual(fs.statSync("testDirectoryField1").size, 4096);
+          assert.strictEqual(fs.statSync("testDirectoryField2").size, 4096);
           fs.rmdirSync("testDirectoryField0");
           fs.rmdirSync("testDirectoryField1");
           fs.rmdirSync("testDirectoryField2");
@@ -44,14 +48,15 @@ describe("json-to-fs-structure", () => {
       };
       jsonToFsStructure(options);
     });
+
     it("should produce a nested directory structure", (done) => {
-      const options = {
+      const options: JsonToFsStructureOptions = {
         jsonObject: {
           testDirectoryField3: { innerTestField: {} },
         },
         filePath: ".",
         callback: () => {
-          assert.equal(
+          assert.strictEqual(
             fs.statSync("testDirectoryField3/innerTestField").size,
             4096,
           );
@@ -62,8 +67,9 @@ describe("json-to-fs-structure", () => {
       };
       jsonToFsStructure(options);
     });
+
     it("should produce a nested directory structure when there is an array of strings", (done) => {
-      const options = {
+      const options: JsonToFsStructureOptions = {
         jsonObject: {
           testArrayField5: [
             { somedir: {} },
@@ -73,9 +79,9 @@ describe("json-to-fs-structure", () => {
         },
         filePath: ".",
         callback: () => {
-          assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/somedir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/anotherdir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/andanotherdir").size, 4096);
           fs.rmdirSync("testArrayField5/somedir");
           fs.rmdirSync("testArrayField5/anotherdir");
           fs.rmdirSync("testArrayField5/andanotherdir");
@@ -85,8 +91,9 @@ describe("json-to-fs-structure", () => {
       };
       jsonToFsStructure(options);
     });
+
     it("should produce a nested deep complex directory structure", (done) => {
-      const options = {
+      const options: JsonToFsStructureOptions = {
         jsonObject: {
           testArrayField5: [
             { somedir: {} },
@@ -104,31 +111,31 @@ describe("json-to-fs-structure", () => {
         },
         filePath: ".",
         callback: () => {
-          assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
-          assert.equal(
+          assert.strictEqual(fs.statSync("testArrayField5/somedir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/anotherdir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/andanotherdir").size, 4096);
+          assert.strictEqual(
             fs.statSync("testArrayField5/andanotherdir/interiorone").size,
             4096,
           );
-          assert.equal(
+          assert.strictEqual(
             fs.statSync("testArrayField5/andanotherdir/interiorone/interiortwo")
               .size,
             4096,
           );
-          assert.equal(
+          assert.strictEqual(
             fs.statSync(
               "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree",
             ).size,
             4096,
           );
-          assert.equal(
+          assert.strictEqual(
             fs.statSync(
               "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfour",
             ).size,
             4096,
           );
-          assert.equal(
+          assert.strictEqual(
             fs.statSync(
               "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfive",
             ).size,
@@ -155,10 +162,11 @@ describe("json-to-fs-structure", () => {
       jsonToFsStructure(options);
     });
   });
+
   describe("jsonToFsWithLeafFunction", () => {
     it("should produce a nested deep complex directory structure and execute the procedure on leaves", (done) => {
-      const endpoints = [];
-      const options = {
+      const endpoints: string[] = [];
+      const options: JsonToFsWithLeafFunctionOptions = {
         jsonObject: {
           testArrayField5: [
             { somedir: {} },
@@ -175,35 +183,35 @@ describe("json-to-fs-structure", () => {
           ],
         },
         filePath: ".",
-        leafProcedure: (filePath, acc) => {
+        leafProcedure: (filePath) => {
           endpoints.push(filePath);
         },
         callback: () => {
-          assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
-          assert.equal(
+          assert.strictEqual(fs.statSync("testArrayField5/somedir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/anotherdir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/andanotherdir").size, 4096);
+          assert.strictEqual(
             fs.statSync("testArrayField5/andanotherdir/interiorone").size,
             4096,
           );
-          assert.equal(
+          assert.strictEqual(
             fs.statSync("testArrayField5/andanotherdir/interiorone/interiortwo")
               .size,
             4096,
           );
-          assert.equal(
+          assert.strictEqual(
             fs.statSync(
               "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree",
             ).size,
             4096,
           );
-          assert.equal(
+          assert.strictEqual(
             fs.statSync(
               "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfour",
             ).size,
             4096,
           );
-          assert.equal(
+          assert.strictEqual(
             fs.statSync(
               "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfive",
             ).size,
@@ -230,9 +238,10 @@ describe("json-to-fs-structure", () => {
       jsonToFsWithLeafFunction(options);
       expect(endpoints).toMatchSnapshot();
     });
+
     it("should produce a nested directory not past a stop word with a leaf function", (done) => {
-      const endpoints = [];
-      const options = {
+      const endpoints: string[] = [];
+      const options: JsonToFsWithLeafFunctionOptions = {
         jsonObject: {
           testArrayField5: [
             { somedir: {} },
@@ -248,14 +257,14 @@ describe("json-to-fs-structure", () => {
             },
           ],
         },
-        leafProcedure: (filePath, acc) => {
+        leafProcedure: (filePath) => {
           endpoints.push(filePath);
         },
         filePath: ".",
         callback: () => {
-          assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/somedir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/anotherdir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/andanotherdir").size, 4096);
           fs.rmdirSync("testArrayField5/somedir");
           fs.rmdirSync("testArrayField5/anotherdir");
           fs.rmdirSync("testArrayField5/andanotherdir");
@@ -268,10 +277,11 @@ describe("json-to-fs-structure", () => {
       expect(endpoints).toMatchSnapshot();
     });
   });
+
   describe("jsonToFsWithNonLeafFunction", () => {
     it("should produce a nested deep complex directory structure and execute the procedure on non leaves", (done) => {
-      const endpoints = [];
-      const options = {
+      const endpoints: string[] = [];
+      const options: JsonToFsWithNonLeafFunctionOptions = {
         jsonObject: {
           testArrayField5: [
             { somedir: {} },
@@ -287,37 +297,37 @@ describe("json-to-fs-structure", () => {
             },
           ],
         },
-        nonLeafProcedure: (filePath, acc) => {
+        nonLeafProcedure: (filePath) => {
           endpoints.push(filePath);
         },
         filePath: ".",
         context: {},
         callback: () => {
-          assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
-          assert.equal(
+          assert.strictEqual(fs.statSync("testArrayField5/somedir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/anotherdir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/andanotherdir").size, 4096);
+          assert.strictEqual(
             fs.statSync("testArrayField5/andanotherdir/interiorone").size,
             4096,
           );
-          assert.equal(
+          assert.strictEqual(
             fs.statSync("testArrayField5/andanotherdir/interiorone/interiortwo")
               .size,
             4096,
           );
-          assert.equal(
+          assert.strictEqual(
             fs.statSync(
               "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree",
             ).size,
             4096,
           );
-          assert.equal(
+          assert.strictEqual(
             fs.statSync(
               "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfour",
             ).size,
             4096,
           );
-          assert.equal(
+          assert.strictEqual(
             fs.statSync(
               "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfive",
             ).size,
@@ -345,10 +355,11 @@ describe("json-to-fs-structure", () => {
       expect(endpoints).toMatchSnapshot();
     });
   });
+
   describe("jsonToFsWithFunction", () => {
     it("should produce a nested deep complex directory structure and execute the procedure on everything", (done) => {
-      const endpoints = [];
-      const options = {
+      const endpoints: string[] = [];
+      const options: JsonToFsWithFunctionOptions = {
         jsonObject: {
           testArrayField5: [
             { somedir: {} },
@@ -364,37 +375,37 @@ describe("json-to-fs-structure", () => {
             },
           ],
         },
-        procedure: (filePath, acc) => {
+        procedure: (filePath) => {
           endpoints.push(filePath);
         },
         filePath: ".",
         context: {},
         callback: () => {
-          assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
-          assert.equal(
+          assert.strictEqual(fs.statSync("testArrayField5/somedir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/anotherdir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/andanotherdir").size, 4096);
+          assert.strictEqual(
             fs.statSync("testArrayField5/andanotherdir/interiorone").size,
             4096,
           );
-          assert.equal(
+          assert.strictEqual(
             fs.statSync("testArrayField5/andanotherdir/interiorone/interiortwo")
               .size,
             4096,
           );
-          assert.equal(
+          assert.strictEqual(
             fs.statSync(
               "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree",
             ).size,
             4096,
           );
-          assert.equal(
+          assert.strictEqual(
             fs.statSync(
               "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfour",
             ).size,
             4096,
           );
-          assert.equal(
+          assert.strictEqual(
             fs.statSync(
               "testArrayField5/andanotherdir/interiorone/interiortwo/interiorthree/interiorfive",
             ).size,
@@ -421,9 +432,10 @@ describe("json-to-fs-structure", () => {
       jsonToFsWithFunction(options);
       expect(endpoints).toMatchSnapshot();
     });
+
     it("should not go below the stop word andanotherdir provided", (done) => {
-      const endpoints = [];
-      const options = {
+      const endpoints: string[] = [];
+      const options: JsonToFsWithFunctionOptions = {
         jsonObject: {
           testArrayField5: [
             { somedir: {} },
@@ -439,14 +451,14 @@ describe("json-to-fs-structure", () => {
             },
           ],
         },
-        procedure: (filePath, acc) => {
+        procedure: (filePath) => {
           endpoints.push(filePath);
         },
         filePath: ".",
         context: {},
         callback: () => {
-          assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/somedir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/anotherdir").size, 4096);
           fs.rmdirSync("testArrayField5/somedir");
           fs.rmdirSync("testArrayField5/anotherdir");
           fs.rmdirSync("testArrayField5");
@@ -457,9 +469,10 @@ describe("json-to-fs-structure", () => {
       jsonToFsWithFunction(options);
       expect(endpoints).toMatchSnapshot();
     });
+
     it("should not do anything with ignored words like meta", (done) => {
-      const endpoints = [];
-      const options = {
+      const endpoints: string[] = [];
+      const options: JsonToFsWithFunctionOptions = {
         jsonObject: {
           testArrayField5: [
             { somedir: { meta: {}, apple: {} } },
@@ -477,20 +490,20 @@ describe("json-to-fs-structure", () => {
             },
           ],
         },
-        procedure: (filePath, acc) => {
+        procedure: (filePath) => {
           endpoints.push(filePath);
         },
         filePath: ".",
         context: {},
         callback: () => {
-          assert.equal(fs.statSync("testArrayField5/somedir").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/anotherdir").size, 4096);
-          assert.equal(fs.statSync("testArrayField5/andanotherdir").size, 4096);
-          assert.equal(
+          assert.strictEqual(fs.statSync("testArrayField5/somedir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/anotherdir").size, 4096);
+          assert.strictEqual(fs.statSync("testArrayField5/andanotherdir").size, 4096);
+          assert.strictEqual(
             fs.statSync("testArrayField5/andanotherdir/interiorone").size,
             4096,
           );
-          assert.equal(
+          assert.strictEqual(
             fs.statSync("testArrayField5/andanotherdir/interiorone/interiortwo")
               .size,
             4096,
