@@ -1,12 +1,16 @@
 {
   "name": "json-to-fs-structure",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "description": "A simple module that takes a simple JSON file and produces the properties as a file structure in the same directory or given directory.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "pretest": "yarn build",
+    "prepublishOnly": "yarn build",
     "test": "jest dist/test/index.test.js",
     "format": "yarn eslint . --fix"
   },
