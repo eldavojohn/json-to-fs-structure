@@ -1,11 +1,11 @@
 # json-to-fs-structure
-Clean and simple JavaScript project for turning JSON objects into directory structures.
+Clean and simple TypeScript project for turning JSON objects into directory structures.
 
 # Development
 For development, clone into this repository and to install run:
-`npm install`
+`yarn install`
 To test run:
-`npm test`
+`yarn test`
 
 # Usage
 To use this node module, install it like so:
